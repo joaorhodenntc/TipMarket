@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  full_name String?
+  email    String   @unique
+  created_at DateTime @default(now())
+  purchases Purchase[]
+  free_tips FreeTip[]
+
+  @@map("users")
+}
+
+model Tip {
+  id           String   @id @default(uuid())
+  imageTipBlur String   
+  imageTip     String  
+  dateGame     DateTime 
+  hourGame     DateTime 
+  created_at   DateTime @default(now())
+  status       String   @default("pending") @db.VarChar(20)
+  purchases    Purchase[]
+  free_tips    FreeTip[]
+
+  @@map("tips")
+}
+
+
+model Purchase {
+  id         String   @id @default(uuid())
+  user_id    String
+  tip_id     String
+  amount     Float
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  tip        Tip      @relation(fields: [tip_id], references: [id])
+
+  @@map("purchases")
+}
+
+model FreeTip {
+  id         String   @id @default(uuid())
+  user_id    String
+  tip_id     String
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  tip        Tip      @relation(fields: [tip_id], references: [id])
+
+  @@map("free_tips")
+}
