@@ -21,7 +21,7 @@ export async function GET(request: Request) {
           { free_tips: { some: { user_id: userId } } }, // Tips gratuitas
         ],
       },
-      orderBy: { dateGame: "desc" }, // Ordena pela data do jogo, mais recentes primeiro
+      orderBy: { gameDate: "desc" }, // Ordena pela data do jogo, mais recentes primeiro
     });
 
     return NextResponse.json(tips);

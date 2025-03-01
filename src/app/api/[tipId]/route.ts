@@ -36,8 +36,7 @@ export async function GET(
     return NextResponse.json({
       id: tip.id,
       image: hasAccess ? tip.imageTip : tip.imageTipBlur,
-      dateGame: tip.dateGame,
-      hourGame: tip.hourGame,
+      dateGame: tip.gameDate,
     });
   } catch (error) {
     console.error("Erro ao buscar tip:", error);
