@@ -11,6 +11,7 @@ model User {
   id        String   @id @default(uuid())
   full_name String?
   email    String   @unique
+  password   String?
   created_at DateTime @default(now())
   purchases Purchase[]
   free_tips FreeTip[]
@@ -20,10 +21,12 @@ model User {
 
 model Tip {
   id           String   @id @default(uuid())
+  game    String
+  description   String
+  odd   Float
   imageTipBlur String   
   imageTip     String  
-  dateGame     DateTime 
-  hourGame     DateTime 
+  gameDate    DateTime
   created_at   DateTime @default(now())
   status       String   @default("pending") @db.VarChar(20)
   purchases    Purchase[]
