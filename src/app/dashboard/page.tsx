@@ -16,26 +16,33 @@ interface Tip {
 }
 
 export default function Dashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [tips, setTips] = useState<Tip[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (status === "loading") return;
+
     const userId = session?.user.id;
     if (!userId) return;
 
     const fetchData = async () => {
-      setIsLoading(true); // Inicia o carregamento
-      const userTipsResponse = await fetch("/api/tips/user", {
-        headers: { "user-id": userId },
-      });
-      const userTips = await userTipsResponse.json();
-      setTips(userTips);
-      setIsLoading(false); // Finaliza o carregamento
+      setIsLoading(true);
+      try {
+        const userTipsResponse = await fetch("/api/tips/user", {
+          headers: { "user-id": userId },
+        });
+        const userTips = await userTipsResponse.json();
+        setTips(userTips);
+      } catch (error) {
+        console.error("Erro ao carregar tips:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchData();
-  }, [session]);
+  }, [session, status]);
 
   return (
     <div>
@@ -68,16 +75,16 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-500">
                   Data: {new Date(tip.gameDate).toLocaleDateString()}
                 </p>
-                <p className="flex gap-2">
+                <div className="flex gap-2">
                   Status:
                   {tip.status == "green" ? (
-                    <p className="font-bold">GREEN ✅</p>
+                    <span className="font-bold">GREEN ✅</span>
                   ) : tip.status == "red" ? (
-                    <p className="font-bold">RED 🔻</p>
+                    <span className="font-bold">RED 🔻</span>
                   ) : (
                     " Pendente"
                   )}
-                </p>
+                </div>
               </div>
             ))}
           </div>
