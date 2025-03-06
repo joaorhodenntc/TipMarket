@@ -41,6 +41,8 @@ model Purchase {
   user_id    String
   tip_id     String
   amount     Float
+  status     String   @default("pending") @db.VarChar(20)
+  payment_id String?  @unique
   created_at DateTime @default(now())
   user       User     @relation(fields: [user_id], references: [id])
   tip        Tip      @relation(fields: [tip_id], references: [id])

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Provider from "./_components/SessionProvider";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,9 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Provider>
-        <body>{children}</body>
-      </Provider>
+      <head />
+      <body className={inter.className}>
+        <Provider>{children}</Provider>
+        <Script
+          src="https://sdk.mercadopago.com/js/v2"
+          strategy="beforeInteractive"
+        />
+      </body>
     </html>
   );
 }
