@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import PaymentModal from "./PaymentModal";
 
 interface Tip {
   id: string;
@@ -18,6 +19,12 @@ export default function PurchaseTip() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [message, setMessage] = useState<string>("");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentData, setPaymentData] = useState<{
+    qrCode: string;
+    qrCodeBase64: string;
+    paymentId: string;
+  } | null>(null);
 
   useEffect(() => {
     const userId = session?.user.id;
@@ -34,13 +41,13 @@ export default function PurchaseTip() {
         }
 
         setTip(tipData);
-        setImageSrc(tipData.imageTipBlur); // Inicia com a imagem borrada
+        setImageSrc(tipData.imageTipBlur);
 
-        // 2. Busca as tips compradas pelo usuário
+        // 2. Busca as tips compradas pelo usuário (apenas com pagamento aprovado)
         if (!userId) return;
 
         const userTipsResponse = await fetch("/api/tips/user", {
-          headers: { "user-id": userId }, // Substituir pelo userId real
+          headers: { "user-id": userId },
         });
         const userTips = await userTipsResponse.json();
 
@@ -49,11 +56,9 @@ export default function PurchaseTip() {
           (userTip: Tip) => userTip.id === tipData.id
         );
 
-        console.log(tip);
-
         if (purchasedTip) {
           setHasPurchased(true);
-          setImageSrc(purchasedTip.imageTip); // Altera para a imagem real
+          setImageSrc(purchasedTip.imageTip);
         }
       } catch (error) {
         console.error("Erro ao buscar as tips:", error);
@@ -62,7 +67,11 @@ export default function PurchaseTip() {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, isPaymentModalOpen]);
+
+  const handlePurchase = async () => {
+    setIsPaymentModalOpen(true);
+  };
 
   if (message) {
     return (
@@ -108,27 +117,20 @@ export default function PurchaseTip() {
         <Button
           variant="outline"
           className="w-[310px] mt-7 bg-[#2A9259] border-none text-white"
-          onClick={async () => {
-            const response = await fetch("/api/checkout", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                user_id: session?.user.id,
-                tip_id: tip?.id,
-                amount: 20,
-              }),
-            });
-
-            const data = await response.json();
-
-            console.log(data);
-            if (data.url) {
-              window.location.href = data.url;
-            }
-          }}
+          onClick={handlePurchase}
         >
           COMPRAR AGORA
         </Button>
+      )}
+
+      {tip && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          userId={session?.user.id || ""}
+          tipId={tip.id}
+          amount={20}
+        />
       )}
     </div>
   );
