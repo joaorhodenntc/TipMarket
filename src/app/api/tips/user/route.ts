@@ -3,32 +3,55 @@ import prisma from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
-    // Pega o user-id dos headers
     const userId = request.headers.get("user-id");
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
+        { error: "ID do usuário é obrigatório" },
+        { status: 400 }
       );
     }
 
-    // Busca todas as Tips que o usuário comprou ou recebeu grátis
-    const tips = await prisma.tip.findMany({
+    // Busca as tips que têm pagamento aprovado
+    const userTips = await prisma.tip.findMany({
       where: {
         OR: [
-          { purchases: { some: { user_id: userId } } }, // Tips compradas
-          { free_tips: { some: { user_id: userId } } }, // Tips gratuitas
+          {
+            // Tips com pagamento aprovado
+            purchases: {
+              some: {
+                user_id: userId,
+                status: "approved",
+              },
+            },
+          },
+          {
+            // Tips gratuitas
+            free_tips: {
+              some: {
+                user_id: userId,
+              },
+            },
+          },
         ],
       },
-      orderBy: { gameDate: "desc" }, // Ordena pela data do jogo, mais recentes primeiro
+      select: {
+        id: true,
+        game: true,
+        description: true,
+        odd: true,
+        imageTipBlur: true,
+        imageTip: true,
+        gameDate: true,
+        status: true,
+      },
     });
 
-    return NextResponse.json(tips);
+    return NextResponse.json(userTips);
   } catch (error) {
     console.error("Erro ao buscar tips do usuário:", error);
     return NextResponse.json(
-      { error: "Erro interno do servidor" },
+      { error: "Erro ao buscar tips do usuário" },
       { status: 500 }
     );
   }
