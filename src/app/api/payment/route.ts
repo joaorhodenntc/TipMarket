@@ -11,21 +11,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { userId, tipId, amount, payment_type } = body;
 
-    // Verifica se já existe uma compra pendente
-    const existingPurchase = await prisma.purchase.findFirst({
-      where: {
-        user_id: userId,
-        tip_id: tipId,
-        status: "pending",
-      },
-    });
-
-    if (existingPurchase) {
-      return NextResponse.json({
-        error: "Já existe um pagamento pendente para esta tip",
-        existing_payment: true,
-      });
-    }
 
     // Busca os dados do usuário
     const user = await prisma.user.findUnique({
