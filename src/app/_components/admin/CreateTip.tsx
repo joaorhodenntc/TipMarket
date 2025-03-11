@@ -16,6 +16,7 @@ export default function CreateTip() {
     price: "",
     imageTip: "",
     imageTipBlur: "",
+    giveAccessToLastBuyers: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,12 +24,18 @@ export default function CreateTip() {
     setIsLoading(true);
 
     try {
+      // Ajustando o horário (subtraindo 3 horas)
+      const gameDate = new Date(formData.gameDate);
+      gameDate.setHours(gameDate.getHours() - 3);
+
       const formattedData = {
         ...formData,
         odd: parseFloat(formData.odd),
         price: parseFloat(formData.price),
-        gameDate: new Date(formData.gameDate).toISOString(),
+        gameDate: gameDate.toISOString(),
       };
+
+      console.log(formattedData);
 
       const response = await fetch("/api/admin/tips", {
         method: "POST",
@@ -52,6 +59,7 @@ export default function CreateTip() {
         price: "",
         imageTip: "",
         imageTipBlur: "",
+        giveAccessToLastBuyers: false,
       });
     } catch (error) {
       console.error("Erro:", error);
@@ -169,6 +177,29 @@ export default function CreateTip() {
           className="bg-gray-800 border-gray-700"
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="giveAccessToLastBuyers"
+            checked={formData.giveAccessToLastBuyers}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                giveAccessToLastBuyers: e.target.checked,
+              })
+            }
+            className="rounded border-gray-700 bg-gray-800"
+          />
+          <Label
+            htmlFor="giveAccessToLastBuyers"
+            className="text-white cursor-pointer"
+          >
+            Dar acesso gratuito aos últimos compradores que tiveram RED
+          </Label>
+        </div>
       </div>
 
       <Button
