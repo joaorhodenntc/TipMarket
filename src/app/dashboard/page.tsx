@@ -35,7 +35,13 @@ export default function Dashboard() {
         });
         const userTips = await userTipsResponse.json();
 
-        setTips(userTips);
+        // Ordenando as tips pela data do jogo (mais recentes primeiro)
+        const sortedTips = userTips.sort(
+          (a: Tip, b: Tip) =>
+            new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime()
+        );
+
+        setTips(sortedTips);
       } catch (error) {
         console.error("Erro ao carregar tips:", error);
       } finally {
