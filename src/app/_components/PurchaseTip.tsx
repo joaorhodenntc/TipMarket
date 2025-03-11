@@ -235,7 +235,9 @@ export default function PurchaseTip() {
             height={1500}
             quality={100}
             alt="Tip"
-            className="w-full h-auto object-cover opacity-50"
+            className={`w-full h-auto object-cover opacity-50 ${
+              hasPurchased ? "opacity-80" : "opacity-50"
+            }`}
           />
           {!hasPurchased && (
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/70 flex items-end justify-center pb-4">
