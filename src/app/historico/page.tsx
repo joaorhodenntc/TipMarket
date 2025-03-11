@@ -210,14 +210,23 @@ export default function HistoricoPage() {
                     placeholder="Buscar por equipe ou jogador..."
                     className="pl-10 bg-gray-800 border-gray-700"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Calendar className="text-gray-500 h-4 w-4" />
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <Select
+                  value={selectedMonth}
+                  onValueChange={(value) => {
+                    setSelectedMonth(value);
+                    setCurrentPage(1);
+                  }}
+                >
                   <SelectTrigger className="w-[200px] bg-gray-800 border-gray-700 text-gray-500">
                     <SelectValue placeholder="Filtrar por mês" />
                   </SelectTrigger>
