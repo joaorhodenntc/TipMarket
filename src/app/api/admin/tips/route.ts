@@ -1,6 +1,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+// GET - Listar todas as tips
+export async function GET() {
+  try {
+    const tips = await prisma.tip.findMany({
+      orderBy: {
+        gameDate: "desc",
+      },
+    });
+
+    return NextResponse.json(tips);
+  } catch (error) {
+    console.error("Erro ao buscar tips:", error);
+    return NextResponse.json({ error: "Erro ao buscar tips" }, { status: 500 });
+  }
+}
+
+// POST - Criar nova tip
 export async function POST(request: Request) {
   try {
     // Extrai os dados do corpo da requisição
