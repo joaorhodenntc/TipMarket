@@ -1,47 +1,47 @@
-"use client"
-import { signIn } from "next-auth/react"
-import type React from "react"
+"use client";
+import { signIn } from "next-auth/react";
+import type React from "react";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
-import { Mail, Lock, LogIn } from "lucide-react"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import { Mail, Lock, LogIn } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
-      })
+      });
 
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        window.location.href = "/"
+        window.location.href = "/";
       }
     } catch (err) {
-      setError("Ocorreu um erro ao fazer login. Tente novamente.")
+      setError("Ocorreu um erro ao fazer login. Tente novamente.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-950">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -85,7 +85,10 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-white font-medium">
                   Senha
                 </Label>
-                <Link href="/recuperar-senha" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                <Link
+                  href="/recuperar-senha"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
                   Esqueceu a senha?
                 </Link>
               </div>
@@ -131,13 +134,15 @@ export default function LoginPage() {
         <div className="text-center mt-6">
           <p className="text-gray-400">
             Não tem uma conta?{" "}
-            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+            <Link
+              href="/register"
+              className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            >
               Cadastre-se
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

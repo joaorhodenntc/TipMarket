@@ -1,73 +1,73 @@
-"use client"
-import { useState } from "react"
-import type React from "react"
+"use client";
+import { useState } from "react";
+import type React from "react";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
-import { Mail, Lock, User, ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import { Mail, Lock, User, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function CadastroPage() {
   const [form, setForm] = useState({
     full_name: "",
     email: "",
     password: "",
-  })
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     if (form.password !== confirmPassword) {
-      setError("As senhas não coincidem")
-      return
+      setError("As senhas não coincidem");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-      })
+      });
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Erro ao registrar")
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao registrar");
 
       // Faz login automático após o registro
       await signIn("credentials", {
         email: form.email,
         password: form.password,
         redirect: false,
-      })
+      });
 
-      router.push("/")
+      router.push("/");
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message)
+        setError(err.message);
       } else {
-        setError("Ocorreu um erro ao registrar")
+        setError("Ocorreu um erro ao registrar");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-950">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -80,8 +80,12 @@ export default function CadastroPage() {
               priority
             />
           </Link>
-          <h1 className="text-white text-3xl font-bold mt-6 mb-2">Criar conta</h1>
-          <p className="text-gray-400">Preencha os dados abaixo para se cadastrar</p>
+          <h1 className="text-white text-3xl font-bold mt-6 mb-2">
+            Criar conta
+          </h1>
+          <p className="text-gray-400">
+            Preencha os dados abaixo para se cadastrar
+          </p>
         </div>
 
         <div className="bg-gray-900 rounded-xl p-8 shadow-lg border border-gray-800">
@@ -151,7 +155,10 @@ export default function CadastroPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white font-medium">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-white font-medium"
+              >
                 Confirmar senha
               </Label>
               <div className="relative">
@@ -202,6 +209,5 @@ export default function CadastroPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
