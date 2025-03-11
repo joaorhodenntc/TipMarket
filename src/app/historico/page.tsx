@@ -20,6 +20,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Tip {
   id: string;
@@ -36,6 +45,8 @@ export default function HistoricoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const tipsPerPage = 5;
 
   // Função para obter os meses disponíveis
   const getAvailableMonths = () => {
@@ -107,6 +118,18 @@ export default function HistoricoPage() {
 
     return true;
   });
+
+  // Cálculo da paginação
+  const totalPages = Math.ceil(filteredTips.length / tipsPerPage);
+  const indexOfLastTip = currentPage * tipsPerPage;
+  const indexOfFirstTip = indexOfLastTip - tipsPerPage;
+  const currentTips = filteredTips.slice(indexOfFirstTip, indexOfLastTip);
+
+  // Função para mudar de página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Estatísticas do mês selecionado
   const getMonthStats = () => {
@@ -224,7 +247,7 @@ export default function HistoricoPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredTips.map((tip) => (
+              {currentTips.map((tip) => (
                 <div
                   key={tip.id}
                   className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-gray-700 transition-all duration-300"
@@ -279,6 +302,72 @@ export default function HistoricoPage() {
                   </div>
                 </div>
               ))}
+
+              {/* Paginação */}
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className={`text-white opacity-50 ${
+                            currentPage === 1
+                              ? "pointer-events-none"
+                              : "cursor-pointer hover:bg-[#2A9259]/20"
+                          }`}
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: totalPages }).map((_, index) => {
+                        const page = index + 1;
+                        // Mostrar primeira página, página atual, última página e páginas adjacentes
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => handlePageChange(page)}
+                                className={`cursor-pointer ${
+                                  currentPage === page
+                                    ? "bg-[#2A9259] text-white"
+                                    : "hover:bg-[#2A9259]/20"
+                                }`}
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                        return null;
+                      })}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className={`text-white opacity-50 ${
+                            currentPage === totalPages
+                              ? "pointer-events-none"
+                              : "cursor-pointer hover:bg-[#2A9259]/20"
+                          }`}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </div>
           )}
 
