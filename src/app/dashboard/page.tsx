@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Header from "../_components/Header";
+import TipCard from "../_components/TipCard";
 
 interface Tip {
   id: string;
@@ -33,6 +34,7 @@ export default function Dashboard() {
           headers: { "user-id": userId },
         });
         const userTips = await userTipsResponse.json();
+
         setTips(userTips);
       } catch (error) {
         console.error("Erro ao carregar tips:", error);
@@ -63,29 +65,7 @@ export default function Dashboard() {
         ) : (
           <div className="w-10/12 lg:w-1/3 mt-3">
             {tips.map((tip) => (
-              <div
-                key={tip.id}
-                className={`border rounded-lg p-4 mb-4 shadow-md bg-[#121A25] text-white ${
-                  tip.status == "green" ? "border-[#2A9259]" : ""
-                }`}
-              >
-                <p className="font-bold">{tip.description}</p>
-                <p className="text-sm text-gray-500 ">{tip.game}</p>
-                <p className="text-sm text-gray-500">Odd: {tip.odd}</p>
-                <p className="text-sm text-gray-500">
-                  Data: {new Date(tip.gameDate).toLocaleDateString()}
-                </p>
-                <div className="flex gap-2">
-                  Status:
-                  {tip.status == "green" ? (
-                    <span className="font-bold">GREEN ✅</span>
-                  ) : tip.status == "red" ? (
-                    <span className="font-bold">RED 🔻</span>
-                  ) : (
-                    " Pendente"
-                  )}
-                </div>
-              </div>
+              <TipCard key={tip.id} tip={tip} />
             ))}
           </div>
         )}
