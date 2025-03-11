@@ -15,6 +15,7 @@ model User {
   created_at DateTime @default(now())
   purchases Purchase[]
   free_tips FreeTip[]
+  role     String    @default("user")
 
   @@map("users")
 }
