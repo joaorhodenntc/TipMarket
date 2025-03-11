@@ -2,7 +2,7 @@ import Image from "next/image";
 import PurchaseTip from "./_components/PurchaseTip";
 import TelegramGroup from "./_components/TelegramGroup";
 import Header from "./_components/Header";
-
+import ViewHistory from "./_components/ViewHistory";
 export default function Home() {
   return (
     <div>
@@ -15,6 +15,7 @@ export default function Home() {
         <p className="text-[#a89c9c] text-[13px]">UMA BET, UMA CHANCE.</p>
       </div>
       <PurchaseTip />
+      <ViewHistory />
       <TelegramGroup />
     </div>
   );
