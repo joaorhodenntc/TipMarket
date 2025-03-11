@@ -1,10 +1,15 @@
-"use client"
-import type React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+"use client";
+import type React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   CreditCard,
   QrCode,
@@ -16,46 +21,56 @@ import {
   Calendar,
   User,
   ShieldCheck,
-} from "lucide-react"
+} from "lucide-react";
 
 declare global {
   interface Window {
-    MercadoPago: any
+    MercadoPago: any;
   }
 }
 
 interface PaymentModalProps {
-  isOpen: boolean
-  onClose: () => void
-  userId: string
-  tipId: string
-  amount: number
+  isOpen: boolean;
+  onClose: () => void;
+  userId: string;
+  tipId: string;
+  amount: number;
+  onPaymentSuccess: () => Promise<void>;
 }
 
-export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }: PaymentModalProps) {
-  const [status, setStatus] = useState<string>("pending")
-  const router = useRouter()
-  const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(null)
-  const [cpf, setCpf] = useState("")
+export default function PaymentModal({
+  isOpen,
+  onClose,
+  userId,
+  tipId,
+  amount,
+  onPaymentSuccess,
+}: PaymentModalProps) {
+  const [status, setStatus] = useState<string>("pending");
+  const router = useRouter();
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(
+    null
+  );
+  const [cpf, setCpf] = useState("");
   const [cardData, setCardData] = useState({
     cardNumber: "",
     cardExpirationMonth: "",
     cardExpirationYear: "",
     securityCode: "",
     cardholderName: "",
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>("")
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
   const [qrCodeData, setQrCodeData] = useState<{
-    qr_code: string
-    qr_code_base64: string
-  } | null>(null)
-  const [copied, setCopied] = useState(false)
+    qr_code: string;
+    qr_code_base64: string;
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handlePixPayment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("/api/payment", {
@@ -70,46 +85,65 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
           payment_type: "pix",
           cpf: cpf.replace(/\D/g, ""), // Remove caracteres não numéricos
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.error) {
-        setError(data.error)
-        return
+        setError(data.error);
+        return;
       }
 
       setQrCodeData({
         qr_code: data.qr_code,
         qr_code_base64: data.qr_code_base64,
-      })
+      });
+
+      // Aguarda o pagamento ser confirmado
+      const checkPayment = setInterval(async () => {
+        const statusResponse = await fetch(
+          `/api/payment/status/${data.payment_id}`
+        );
+        const statusData = await statusResponse.json();
+
+        if (statusData.status === "approved") {
+          clearInterval(checkPayment);
+          await onPaymentSuccess();
+          setStatus("success");
+          setTimeout(() => {
+            onClose();
+          }, 2000);
+        }
+      }, 5000);
     } catch (error: any) {
-      console.error("Erro ao gerar PIX:", error)
-      setError(error.message || "Erro ao gerar PIX")
+      console.error("Erro ao gerar PIX:", error);
+      setError(error.message || "Erro ao gerar PIX");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCardPayment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const mp = new window.MercadoPago("TEST-dda312b0-3b99-40f1-8fb5-c8d0177d07d5")
+      const mp = new window.MercadoPago(
+        "TEST-dda312b0-3b99-40f1-8fb5-c8d0177d07d5"
+      );
 
       // Primeiro, identifica o tipo de cartão
-      const cardNumber = cardData.cardNumber.replace(/\s/g, "")
+      const cardNumber = cardData.cardNumber.replace(/\s/g, "");
       const paymentMethod = await mp.getPaymentMethods({
         bin: cardNumber.substring(0, 6),
-      })
+      });
 
       if (!paymentMethod.results || paymentMethod.results.length === 0) {
-        throw new Error("Cartão não suportado")
+        throw new Error("Cartão não suportado");
       }
 
-      const payment_method_id = paymentMethod.results[0].id
+      const payment_method_id = paymentMethod.results[0].id;
 
       // Depois, gera o token do cartão
       const cardTokenResult = await mp.createCardToken({
@@ -120,10 +154,10 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
         securityCode: cardData.securityCode,
         identificationType: "CPF",
         identificationNumber: "12345678909",
-      })
+      });
 
       if (!cardTokenResult.id) {
-        throw new Error("Erro ao gerar token do cartão")
+        throw new Error("Erro ao gerar token do cartão");
       }
 
       // Envia o token para o backend
@@ -140,37 +174,37 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
           token: cardTokenResult.id,
           payment_method_id: payment_method_id,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.error) {
-        setError(data.error)
-        setStatus("rejected")
-        return
+        setError(data.error);
+        setStatus("rejected");
+        return;
       }
 
       if (data.status === "approved") {
-        setStatus("success")
+        await onPaymentSuccess();
+        setStatus("success");
         setTimeout(() => {
-          onClose()
-          router.refresh()
-        }, 2000)
+          onClose();
+        }, 2000);
       } else {
-        setError("Pagamento não aprovado. Por favor, tente novamente.")
-        setStatus("rejected")
+        setError("Pagamento não aprovado. Por favor, tente novamente.");
+        setStatus("rejected");
       }
     } catch (error: any) {
-      console.error("Erro ao processar pagamento:", error)
-      setError(error.message || "Erro ao processar pagamento")
-      setStatus("rejected")
+      console.error("Erro ao processar pagamento:", error);
+      setError(error.message || "Erro ao processar pagamento");
+      setStatus("rejected");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     if (name === "cpf") {
       // Formata o CPF enquanto digita
       const formattedValue = value
@@ -178,28 +212,28 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
-        .substring(0, 14)
-      setCpf(formattedValue)
+        .substring(0, 14);
+      setCpf(formattedValue);
     } else if (name === "cardNumber") {
       // Formata o número do cartão em grupos de 4
       const formattedValue = value
         .replace(/\D/g, "")
         .replace(/(\d{4})(?=\d)/g, "$1 ")
-        .substring(0, 19)
-      setCardData((prev) => ({ ...prev, [name]: formattedValue }))
+        .substring(0, 19);
+      setCardData((prev) => ({ ...prev, [name]: formattedValue }));
     } else {
-      setCardData((prev) => ({ ...prev, [name]: value }))
+      setCardData((prev) => ({ ...prev, [name]: value }));
     }
-    setError("")
-  }
+    setError("");
+  };
 
   const copyToClipboard = () => {
     if (qrCodeData) {
-      navigator.clipboard.writeText(qrCodeData.qr_code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      navigator.clipboard.writeText(qrCodeData.qr_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -207,10 +241,20 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
         <div className="bg-gradient-to-r from-[#2A9259]/20 to-[#121A25] p-6">
           <DialogHeader>
             <DialogTitle className="text-white text-center text-xl font-medium">
-              {status === "pending" && !paymentMethod && "Escolha a forma de pagamento"}
-              {status === "pending" && paymentMethod === "pix" && !qrCodeData && "Pagamento via PIX"}
-              {status === "pending" && paymentMethod === "pix" && qrCodeData && "QR Code PIX"}
-              {status === "pending" && paymentMethod === "card" && "Pagamento com Cartão"}
+              {status === "pending" &&
+                !paymentMethod &&
+                "Escolha a forma de pagamento"}
+              {status === "pending" &&
+                paymentMethod === "pix" &&
+                !qrCodeData &&
+                "Pagamento via PIX"}
+              {status === "pending" &&
+                paymentMethod === "pix" &&
+                qrCodeData &&
+                "QR Code PIX"}
+              {status === "pending" &&
+                paymentMethod === "card" &&
+                "Pagamento com Cartão"}
               {status === "success" && "Pagamento Confirmado"}
               {status === "rejected" && "Pagamento Rejeitado"}
             </DialogTitle>
@@ -218,7 +262,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
 
           <div className="text-center mt-2">
             <div className="inline-flex items-center bg-[#1A2430] px-4 py-1.5 rounded-full">
-              <span className="text-[#2A9259] font-medium">R$ {amount.toFixed(2)}</span>
+              <span className="text-[#2A9259] font-medium">
+                R$ {amount.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>
@@ -240,7 +286,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
                       <QrCode className="w-6 h-6 text-[#2A9259]" />
                     </div>
                     <span className="text-white font-medium">PIX</span>
-                    <span className="text-gray-400 text-xs mt-1">Pagamento instantâneo</span>
+                    <span className="text-gray-400 text-xs mt-1">
+                      Pagamento instantâneo
+                    </span>
                   </div>
                 </button>
 
@@ -253,7 +301,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
                       <CreditCard className="w-6 h-6 text-[#2A9259]" />
                     </div>
                     <span className="text-white font-medium">Cartão</span>
-                    <span className="text-gray-400 text-xs mt-1">Crédito ou débito</span>
+                    <span className="text-gray-400 text-xs mt-1">
+                      Crédito ou débito
+                    </span>
                   </div>
                 </button>
               </div>
@@ -262,7 +312,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
 
           {status === "pending" && paymentMethod === "pix" && !qrCodeData && (
             <form onSubmit={handlePixPayment} className="space-y-4">
-              <p className="text-gray-400 text-sm mb-4">Informe seu CPF para gerar o código PIX</p>
+              <p className="text-gray-400 text-sm mb-4">
+                Informe seu CPF para gerar o código PIX
+              </p>
 
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -326,7 +378,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
                 <div className="relative">
                   <Button
                     onClick={copyToClipboard}
-                    className={`w-full ${copied ? "bg-green-600" : "bg-[#2A9259]"} hover:bg-[#1f6940] text-white py-5 rounded-lg transition-all duration-200 flex items-center justify-center`}
+                    className={`w-full ${
+                      copied ? "bg-green-600" : "bg-[#2A9259]"
+                    } hover:bg-[#1f6940] text-white py-5 rounded-lg transition-all duration-200 flex items-center justify-center`}
                   >
                     {copied ? (
                       <>
@@ -349,8 +403,8 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
 
               <Button
                 onClick={() => {
-                  setQrCodeData(null)
-                  setPaymentMethod(null)
+                  setQrCodeData(null);
+                  setPaymentMethod(null);
                 }}
                 className="w-full bg-transparent border border-[#2A9259]/50 text-white hover:bg-[#1A2430] hover:border-[#2A9259] rounded-lg transition-all duration-200 flex items-center justify-center py-5"
               >
@@ -362,7 +416,9 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
 
           {status === "pending" && paymentMethod === "card" && (
             <form onSubmit={handleCardPayment} className="space-y-4">
-              <p className="text-gray-400 text-sm mb-4">Informe os dados do seu cartão para pagamento</p>
+              <p className="text-gray-400 text-sm mb-4">
+                Informe os dados do seu cartão para pagamento
+              </p>
 
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -463,8 +519,12 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
               </div>
 
               <div>
-                <p className="text-[#2A9259] text-xl font-bold">Pagamento Confirmado!</p>
-                <p className="text-gray-300 mt-2">Sua tip será liberada em instantes...</p>
+                <p className="text-[#2A9259] text-xl font-bold">
+                  Pagamento Confirmado!
+                </p>
+                <p className="text-gray-300 mt-2">
+                  Sua tip será liberada em instantes...
+                </p>
               </div>
 
               <div className="w-full max-w-[120px] h-1 bg-[#1A2430] mx-auto rounded-full overflow-hidden">
@@ -480,15 +540,20 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
               </div>
 
               <div>
-                <p className="text-red-500 text-xl font-bold">Pagamento Rejeitado</p>
-                <p className="text-gray-300 mt-2">{error || "Tente novamente ou entre em contato com o suporte."}</p>
+                <p className="text-red-500 text-xl font-bold">
+                  Pagamento Rejeitado
+                </p>
+                <p className="text-gray-300 mt-2">
+                  {error ||
+                    "Tente novamente ou entre em contato com o suporte."}
+                </p>
               </div>
 
               <Button
                 onClick={() => {
-                  setStatus("pending")
-                  setPaymentMethod(null)
-                  setError("")
+                  setStatus("pending");
+                  setPaymentMethod(null);
+                  setError("");
                 }}
                 className="w-full bg-[#2A9259] hover:bg-[#1f6940] text-white py-6 rounded-lg transition-all duration-200"
               >
@@ -505,6 +570,5 @@ export default function PaymentModal({ isOpen, onClose, userId, tipId, amount }:
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

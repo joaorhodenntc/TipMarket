@@ -100,6 +100,28 @@ export default function PurchaseTip() {
     setIsPaymentModalOpen(true);
   };
 
+  const handlePaymentSuccess = async () => {
+    if (tip) {
+      try {
+        const response = await fetch("/api/tips/user", {
+          headers: { "user-id": session?.user.id || "" },
+        });
+        const userTips = await response.json();
+
+        const purchasedTip = userTips.find(
+          (userTip: Tip) => userTip.id === tip.id
+        );
+
+        if (purchasedTip) {
+          setHasPurchased(true);
+          setImageSrc(purchasedTip.imageTip);
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar tip:", error);
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[300px] text-white">
@@ -242,6 +264,7 @@ export default function PurchaseTip() {
             userId={session?.user.id || ""}
             tipId={tip.id}
             amount={20}
+            onPaymentSuccess={handlePaymentSuccess}
           />
         )}
       </div>
