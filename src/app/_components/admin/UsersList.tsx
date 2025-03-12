@@ -10,15 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Gift } from "lucide-react";
+import { Loader2, Gift, Eye } from "lucide-react";
 
 interface User {
   id: string;
   name: string;
   email: string;
   tipsPurchased: number;
-  tipsWithRed: number;
-  hasFreeTip: boolean;
 }
 
 export default function UsersList() {
@@ -41,23 +39,6 @@ export default function UsersList() {
     }
   };
 
-  const handleGiveFreeTip = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/admin/users/${userId}/free-tip`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao dar tip grátis");
-      }
-
-      // Atualiza a lista de usuários
-      fetchUsers();
-    } catch (error) {
-      console.error("Erro:", error);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-4">
@@ -74,8 +55,6 @@ export default function UsersList() {
             <TableHead className="text-white">Nome</TableHead>
             <TableHead className="text-white">Email</TableHead>
             <TableHead className="text-white">Tips Compradas</TableHead>
-            <TableHead className="text-white">Tips com Red</TableHead>
-            <TableHead className="text-white">Tip Grátis</TableHead>
             <TableHead className="text-white">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -85,28 +64,10 @@ export default function UsersList() {
               <TableCell className="text-white">{user.name}</TableCell>
               <TableCell className="text-white">{user.email}</TableCell>
               <TableCell className="text-white">{user.tipsPurchased}</TableCell>
-              <TableCell className="text-white">{user.tipsWithRed}</TableCell>
-              <TableCell>
-                <Badge
-                  variant="default"
-                  className={
-                    user.hasFreeTip ? "bg-[#2A9259] hover:bg-[#2A9259]/90" : ""
-                  }
-                >
-                  {user.hasFreeTip ? "Disponível" : "Indisponível"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {!user.hasFreeTip && user.tipsWithRed > 0 && (
-                  <Button
-                    size="sm"
-                    className="bg-[#2A9259] hover:bg-[#2A9259]/90"
-                    onClick={() => handleGiveFreeTip(user.id)}
-                  >
-                    <Gift className="w-4 h-4 mr-2" />
-                    Dar Tip Grátis
-                  </Button>
-                )}
+              <TableCell className="text-white">
+                <Button size="icon" className="bg-[#2A9259]">
+                  <Eye className="w-4 h-4" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

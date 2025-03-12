@@ -33,31 +33,18 @@ export async function GET(request: Request) {
             },
           },
         },
-        free_tips: {
-          where: {
-            tip: {
-              status: "pending", // Apenas tips pendentes contam como disponíveis
-            },
-          },
-        },
       },
     });
 
     // Formatar a resposta
     const formattedUsers = users.map((user) => {
       const tipsPurchased = user.purchases.length;
-      const tipsWithRed = user.purchases.filter(
-        (purchase) => purchase.tip.status === "red"
-      ).length;
-      const hasFreeTip = user.free_tips.length > 0;
 
       return {
         id: user.id,
         name: user.full_name || "Sem nome",
         email: user.email,
         tipsPurchased,
-        tipsWithRed,
-        hasFreeTip,
       };
     });
 
