@@ -55,9 +55,6 @@ export default function AdminPage() {
 
           <TabsContent value="users">
             <Card className="bg-gray-900/60 backdrop-blur-sm border border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-white">Usuários</CardTitle>
-              </CardHeader>
               <CardContent>
                 <UsersList />
               </CardContent>
@@ -66,9 +63,6 @@ export default function AdminPage() {
 
           <TabsContent value="history">
             <Card className="bg-gray-900/60 backdrop-blur-sm border border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-white">Histórico de Tips</CardTitle>
-              </CardHeader>
               <CardContent>
                 <TipsList />
               </CardContent>
