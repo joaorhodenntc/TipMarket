@@ -81,7 +81,7 @@ export default function CreateTip() {
   };
 
   return (
-    <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl border border-gray-800 shadow-lg p-6 max-w-2xl mx-auto text-white">
+    <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl border border-gray-800 shadow-lg p-6 mx-auto text-white">
       <div className="mb-6 text-center">
         <h2 className="text-white text-2xl font-bold mb-2">Criar Nova Tip</h2>
         <p className="text-gray-400">
