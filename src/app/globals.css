@@ -6,7 +6,7 @@
 
 html,
 body {
-  background-color: #121A25;
+  background-color: #121a25;
   min-height: 100vh;
   overflow-x: hidden;
   font-family: "Poppins", sans-serif;
@@ -100,4 +100,22 @@ body {
       transform: translateX(100%);
     }
   }
+}
+
+.scrollable-content {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: transparent;
 }
