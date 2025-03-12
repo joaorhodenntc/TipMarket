@@ -20,12 +20,12 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="tips" className="space-y-4">
-          <TabsList className="bg-gray-900/60 backdrop-blur-sm border border-gray-800">
+          <TabsList className="bg-gray-900/60 backdrop-blur-sm border border-gray-800 flex justify-center w-fit mx-auto">
             <TabsTrigger
               value="tips"
               className="data-[state=active]:bg-[#2A9259]"
             >
-              Tips
+              Criar Tip
             </TabsTrigger>
             <TabsTrigger
               value="users"
@@ -45,10 +45,7 @@ export default function AdminPage() {
 
           <TabsContent value="tips">
             <div>
-              <Card className="bg-gray-900/60 backdrop-blur-sm border border-gray-800">
-                <CardHeader>
-                  <CardTitle className="text-white">Criar Nova Tip</CardTitle>
-                </CardHeader>
+              <Card className="bg-gray-900/5 backdrop-blur-sm border-none">
                 <CardContent>
                   <CreateTip />
                 </CardContent>
