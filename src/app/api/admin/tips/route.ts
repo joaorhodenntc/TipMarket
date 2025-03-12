@@ -58,7 +58,6 @@ export async function POST(request: Request) {
         gameDate: new Date(tipData.gameDate),
         imageTip: tipData.imageTip,
         imageTipBlur: tipData.imageTipBlur,
-        status: "pending",
       },
     });
 
