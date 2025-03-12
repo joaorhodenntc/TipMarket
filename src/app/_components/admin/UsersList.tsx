@@ -144,11 +144,11 @@ export default function UsersList() {
       <div className="rounded-md border border-gray-800">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-900/60">
+            <TableRow className="bg-gray-900/60 hover:bg-gray-800/50 ">
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
-                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1"
+                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1 hover:bg-gray-800/50"
                   onClick={() => handleSort("name")}
                 >
                   Nome
@@ -158,7 +158,7 @@ export default function UsersList() {
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
-                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1"
+                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1 hover:bg-gray-800/50"
                   onClick={() => handleSort("email")}
                 >
                   Email
@@ -168,7 +168,7 @@ export default function UsersList() {
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
-                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1"
+                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1 hover:bg-gray-800/50"
                   onClick={() => handleSort("tipsPurchased")}
                 >
                   Tips Compradas
@@ -178,7 +178,7 @@ export default function UsersList() {
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
-                  className="text-white hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1"
+                  className="text-white  hover:text-[#2A9259] p-0 h-auto font-medium flex items-center gap-1 hover:bg-gray-800/50"
                   onClick={() => handleSort("created_at")}
                 >
                   Criação da Conta
@@ -190,7 +190,10 @@ export default function UsersList() {
           </TableHeader>
           <TableBody>
             {sortedUsers.map((user) => (
-              <TableRow key={user.id} className="border-gray-800">
+              <TableRow
+                key={user.id}
+                className="border-gray-800 hover:bg-gray-800/50"
+              >
                 <TableCell className="text-white">{user.name}</TableCell>
                 <TableCell className="text-white">{user.email}</TableCell>
                 <TableCell className="text-white">
