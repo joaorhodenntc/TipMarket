@@ -4,14 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
+  background-color: #121A25;
+  min-height: 100vh;
+  overflow-x: hidden;
   font-family: "Poppins", sans-serif;
   background-image: url("/bg-new.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   margin: 0;
-  min-height: 100vh;
 }
 
 @layer base {
