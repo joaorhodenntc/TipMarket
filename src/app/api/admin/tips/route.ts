@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       !tipData.game ||
       !tipData.description ||
       !tipData.odd ||
+      !tipData.price ||
       !tipData.gameDate ||
       !tipData.imageTip ||
       !tipData.imageTipBlur
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
         game: tipData.game,
         description: tipData.description,
         odd: Number(tipData.odd),
+        price: Number(tipData.price),
         gameDate: new Date(tipData.gameDate),
         imageTip: tipData.imageTip,
         imageTipBlur: tipData.imageTipBlur,

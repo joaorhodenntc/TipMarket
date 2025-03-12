@@ -24,10 +24,10 @@ const formatTime = (dateString: string) => {
 
 interface Tip {
   id: string;
+  price: number;
   imageTipBlur: string;
   imageTipClear?: string; // Essa propriedade só vem de /api/tips/user
   gameDate: string;
-  price: number;
 }
 
 export default function PurchaseTip() {
@@ -46,7 +46,7 @@ export default function PurchaseTip() {
 
   useEffect(() => {
     const userId = session?.user.id;
-
+    
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -59,7 +59,7 @@ export default function PurchaseTip() {
           setIsLoading(false);
           return;
         }
-
+        console.log("tipData", tipData);
         setTip(tipData);
 
         setImageSrc(tipData.imageTipBlur);
@@ -265,7 +265,7 @@ export default function PurchaseTip() {
             onClose={() => setIsPaymentModalOpen(false)}
             userId={session?.user.id || ""}
             tipId={tip.id}
-            amount={20}
+            amount={tip.price} //puxar do banco de dados o price
             onPaymentSuccess={handlePaymentSuccess}
           />
         )}

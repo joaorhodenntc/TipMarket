@@ -6,6 +6,7 @@ export async function GET() {
     const tips = await prisma.tip.findMany({
       select: {
         id: true,
+        price: true,
         imageTipBlur: true,
         gameDate: true,
       },

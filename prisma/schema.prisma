@@ -25,6 +25,7 @@ model Tip {
   game    String
   description   String
   odd   Float
+  price Float @default(20)
   imageTipBlur String   
   imageTip     String  
   gameDate    DateTime

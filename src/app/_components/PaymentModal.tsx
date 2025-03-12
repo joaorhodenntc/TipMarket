@@ -263,7 +263,7 @@ export default function PaymentModal({
           <div className="text-center mt-2">
             <div className="inline-flex items-center bg-[#1A2430] px-4 py-1.5 rounded-full">
               <span className="text-[#2A9259] font-medium">
-                R$ {amount.toFixed(2)}
+                R$ {amount}
               </span>
             </div>
           </div>
@@ -496,7 +496,7 @@ export default function PaymentModal({
                 ) : (
                   <div className="flex items-center">
                     <CreditCard className="w-4 h-4 mr-2" />
-                    Pagar R$ {amount.toFixed(2)}
+                    Pagar R$ {amount}
                   </div>
                 )}
               </Button>

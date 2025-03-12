@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "tips" ADD COLUMN     "price" DOUBLE PRECISION NOT NULL DEFAULT 20;
