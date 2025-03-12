@@ -131,8 +131,15 @@ export default function UsersList() {
         headers: { "user-id": userId },
       });
       const data = await response.json();
+
+      // Ordenando as tips por data do jogo (mais recentes primeiro)
+      const sortedTips = data.sort(
+        (a: Tip, b: Tip) =>
+          new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime()
+      );
+
       setNumberOfTips(data.length);
-      setSelectedUserTips(data);
+      setSelectedUserTips(sortedTips);
     } catch (error) {
       console.error("Erro ao buscar tips do usuário:", error);
     } finally {
