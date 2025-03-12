@@ -8,6 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   Calendar,
   TrendingUp,
@@ -16,10 +23,12 @@ import {
   ImageIcon,
   LinkIcon,
   Users,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function CreateTip() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [formData, setFormData] = useState({
     game: "",
     description: "",
@@ -30,6 +39,27 @@ export default function CreateTip() {
     imageTipBlur: "",
     giveAccessToLastBuyers: false,
   });
+
+  const handleCheckboxChange = () => {
+    if (!formData.giveAccessToLastBuyers) {
+      setShowConfirmDialog(true);
+    } else {
+      setFormData({
+        ...formData,
+        giveAccessToLastBuyers: false,
+      });
+    }
+  };
+
+  const handleConfirmAccess = (confirmed: boolean) => {
+    if (confirmed) {
+      setFormData({
+        ...formData,
+        giveAccessToLastBuyers: true,
+      });
+    }
+    setShowConfirmDialog(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,12 +331,7 @@ export default function CreateTip() {
             <Checkbox
               id="giveAccessToLastBuyers"
               checked={formData.giveAccessToLastBuyers}
-              onCheckedChange={(checked) =>
-                setFormData({
-                  ...formData,
-                  giveAccessToLastBuyers: checked as boolean,
-                })
-              }
+              onCheckedChange={handleCheckboxChange}
               className="data-[state=checked]:bg-[#2A9259] data-[state=checked]:border-[#2A9259]"
             />
             <Label
@@ -316,6 +341,39 @@ export default function CreateTip() {
               Dar acesso gratuito aos últimos compradores que tiveram RED
             </Label>
           </div>
+
+          <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+            <DialogContent className="bg-gray-900 text-white border-gray-800">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  <span>Confirmar Acesso Gratuito</span>
+                </DialogTitle>
+              </DialogHeader>
+              <div className="py-3">
+                <p>Tem certeza que deseja marcar esta opção?</p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Isso dará acesso gratuito a esta tip para todos os usuários
+                  que tiveram RED na última tip comprada.
+                </p>
+              </div>
+              <DialogFooter className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleConfirmAccess(false)}
+                  className="border-gray-700 text-white hover:bg-gray-800 hover:text-white"
+                >
+                  Não
+                </Button>
+                <Button
+                  onClick={() => handleConfirmAccess(true)}
+                  className="bg-[#2A9259] hover:bg-[#2A9259]/90"
+                >
+                  Sim, dar acesso
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Button
