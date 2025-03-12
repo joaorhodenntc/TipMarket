@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle, XCircle, Clock, Users } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Clock, Users, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -111,10 +111,12 @@ export default function TipsList() {
           <TableHeader>
             <TableRow className="bg-gray-900/60">
               <TableHead className="text-white">Jogo</TableHead>
+              <TableHead className="text-white">Descrição</TableHead>
               <TableHead className="text-white">Data</TableHead>
               <TableHead className="text-white">Odd</TableHead>
               <TableHead className="text-white">Status</TableHead>
               <TableHead className="text-white">Ações</TableHead>
+              <TableHead className="text-white">Compradores</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -122,9 +124,9 @@ export default function TipsList() {
               <TableRow
                 key={tip.id}
                 className="border-gray-800 cursor-pointer hover:bg-gray-800/50"
-                onClick={() => handleViewUsers(tip)}
               >
                 <TableCell className="text-white">{tip.game}</TableCell>
+                <TableCell className="text-white">{tip.description}</TableCell>
                 <TableCell className="text-white">
                   {formatDate(tip.gameDate)}
                 </TableCell>
@@ -190,6 +192,15 @@ export default function TipsList() {
                       Pendente
                     </Button>
                   </div>
+                </TableCell>
+                <TableCell className="text-white">
+                  <Button
+                    size="icon"
+                    className="bg-[#2A9259]"
+                    onClick={() => handleViewUsers(tip)}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
