@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { Purchase, FreeTip } from "@prisma/client";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { tipId: string } }
-) {
+type Props = {
+  params: {
+    tipId: string;
+  };
+};
+
+export async function GET(request: Request, context: Props) {
   try {
+    const { tipId } = await context.params;
+
     // Buscar usuários que compraram a tip e têm pagamento aprovado
     const purchasers = await prisma.purchase.findMany({
       where: {
-        tip_id: params.tipId,
-        status: "approved", // Filtrando apenas pagamentos aprovados
+        tip_id: tipId,
+        status: "approved",
       },
       include: {
         user: {
@@ -27,7 +31,7 @@ export async function GET(
     // Buscar usuários que receberam a tip gratuitamente
     const freeTipUsers = await prisma.freeTip.findMany({
       where: {
-        tip_id: params.tipId,
+        tip_id: tipId,
       },
       include: {
         user: {
@@ -42,13 +46,13 @@ export async function GET(
 
     // Formatando a resposta
     const users = [
-      ...purchasers.map((purchase: any) => ({
+      ...purchasers.map((purchase) => ({
         id: purchase.user.id,
         name: purchase.user.full_name || "Sem nome",
         email: purchase.user.email,
         type: "Comprador" as const,
       })),
-      ...freeTipUsers.map((freeTip: any) => ({
+      ...freeTipUsers.map((freeTip) => ({
         id: freeTip.user.id,
         name: freeTip.user.full_name || "Sem nome",
         email: freeTip.user.email,
