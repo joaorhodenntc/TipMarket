@@ -15,12 +15,13 @@ export async function GET(request: Request) {
     // Buscar todos os usuários com suas compras e tips gratuitas
     const users = await prisma.user.findMany({
       where: {
-        role: "user", // Excluir admins da lista
+        role: "user",
       },
       select: {
         id: true,
         full_name: true,
         email: true,
+        created_at: true,
         purchases: {
           where: {
             status: "approved",
@@ -42,8 +43,9 @@ export async function GET(request: Request) {
 
       return {
         id: user.id,
-        name: user.full_name || "Sem nome",
+        name: user.full_name,
         email: user.email,
+        created_at: user.created_at,
         tipsPurchased,
       };
     });
