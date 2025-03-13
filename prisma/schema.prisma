@@ -16,6 +16,8 @@ model User {
   purchases Purchase[]
   free_tips FreeTip[]
   role     String    @default("user")
+  reset_token String? @unique
+  reset_token_expiry DateTime?
 
   @@map("users")
 }

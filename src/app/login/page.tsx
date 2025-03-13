@@ -9,12 +9,14 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Lock, LogIn } from "lucide-react";
+import ForgotPasswordModal from "@/app/_components/ForgotPasswordModal";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -85,12 +87,13 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-white font-medium">
                   Senha
                 </Label>
-                <Link
-                  href="/recuperar-senha"
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
                   className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                 >
                   Esqueceu a senha?
-                </Link>
+                </button>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -143,6 +146,11 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 }
