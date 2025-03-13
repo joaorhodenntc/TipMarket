@@ -46,7 +46,7 @@ export default function PurchaseTip() {
 
   useEffect(() => {
     const userId = session?.user.id;
-    
+
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -59,7 +59,7 @@ export default function PurchaseTip() {
           setIsLoading(false);
           return;
         }
-        console.log("tipData", tipData);
+
         setTip(tipData);
 
         setImageSrc(tipData.imageTipBlur);

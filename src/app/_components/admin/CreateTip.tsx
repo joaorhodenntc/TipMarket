@@ -77,8 +77,6 @@ export default function CreateTip() {
         gameDate: gameDate.toISOString(),
       };
 
-      console.log(formattedData);
-
       const response = await fetch("/api/admin/tips", {
         method: "POST",
         headers: {
