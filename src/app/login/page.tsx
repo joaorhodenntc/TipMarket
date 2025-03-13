@@ -31,6 +31,10 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+        if (result?.error == "CredentialsSignin") {
+          setError("Email ou senha inválidos");
+          return;
+        }
         setError(result.error);
       } else {
         window.location.href = "/";
