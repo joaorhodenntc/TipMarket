@@ -81,7 +81,6 @@ export default function PaymentModal({
         body: JSON.stringify({
           userId,
           tipId,
-          amount,
           payment_type: "pix",
           cpf: cpf.replace(/\D/g, ""), // Remove caracteres não numéricos
         }),
@@ -169,7 +168,6 @@ export default function PaymentModal({
         body: JSON.stringify({
           userId,
           tipId,
-          amount,
           payment_type: "card",
           token: cardTokenResult.id,
           payment_method_id: payment_method_id,
@@ -262,9 +260,7 @@ export default function PaymentModal({
 
           <div className="text-center mt-2">
             <div className="inline-flex items-center bg-[#1A2430] px-4 py-1.5 rounded-full">
-              <span className="text-[#2A9259] font-medium">
-                R$ {amount}
-              </span>
+              <span className="text-[#2A9259] font-medium">R$ {amount}</span>
             </div>
           </div>
         </div>

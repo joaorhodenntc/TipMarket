@@ -9,13 +9,17 @@ const client = new MercadoPagoConfig({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, tipId, amount, payment_type } = body;
+    const { userId, tipId, payment_type } = body;
 
-
-    // Busca os dados do usuário
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    // Busca os dados do usuário e da tip
+    const [user, tip] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+      }),
+      prisma.tip.findUnique({
+        where: { id: tipId },
+      }),
+    ]);
 
     if (!user) {
       return NextResponse.json(
@@ -23,6 +27,15 @@ export async function POST(request: Request) {
         { status: 404 }
       );
     }
+
+    if (!tip) {
+      return NextResponse.json(
+        { error: "Tip não encontrada" },
+        { status: 404 }
+      );
+    }
+    // Usa o preço da tip do banco de dados
+    const amount = tip.price;
 
     // Separa o nome completo em primeiro nome e sobrenome
     const nameParts = user.full_name?.split(" ") || ["User", "Test"];
