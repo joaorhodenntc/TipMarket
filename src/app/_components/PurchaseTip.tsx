@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import PaymentModal from "./PaymentModal";
 import { Calendar, Clock, ShoppingCart, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -43,6 +44,7 @@ export default function PurchaseTip() {
     paymentId: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const userId = session?.user.id;
@@ -97,7 +99,11 @@ export default function PurchaseTip() {
   }, [session]);
 
   const handlePurchase = async () => {
-    setIsPaymentModalOpen(true);
+    if (session?.user.id) {
+      setIsPaymentModalOpen(true);
+    } else {
+      router.push("/login");
+    }
   };
 
   const handlePaymentSuccess = async () => {
