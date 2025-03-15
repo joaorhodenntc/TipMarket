@@ -41,6 +41,14 @@ export default function Dashboard() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        // Tenta recuperar as tips do localStorage primeiro
+        const cachedTips = localStorage.getItem(`tips_${userId}`);
+        if (cachedTips) {
+          setTips(JSON.parse(cachedTips));
+          setIsLoading(false);
+        }
+
+        // Faz a requisição para atualizar os dados
         const userTipsResponse = await fetch("/api/tips/user", {
           headers: { "user-id": userId },
         });
@@ -52,7 +60,9 @@ export default function Dashboard() {
             new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime()
         );
 
+        // Atualiza o estado e o localStorage
         setTips(sortedTips);
+        localStorage.setItem(`tips_${userId}`, JSON.stringify(sortedTips));
       } catch (error) {
         console.error("Erro ao carregar tips:", error);
       } finally {
@@ -85,7 +95,7 @@ export default function Dashboard() {
         </a>
         <h1 className="text-2xl font-bold text-white">Minhas Tips</h1>
 
-        {isLoading ? (
+        {isLoading && !tips.length ? (
           <p className="text-gray-500">Carregando...</p>
         ) : tips.length === 0 ? (
           <p className="text-gray-500">
