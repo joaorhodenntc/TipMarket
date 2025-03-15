@@ -261,7 +261,7 @@ export default function HistoricoPage() {
                   key={tip.id}
                   className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-gray-700 transition-all duration-300"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex flex-row items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="flex items-center gap-1 bg-gray-800/50 px-2 py-1 rounded-full text-xs text-gray-300">
